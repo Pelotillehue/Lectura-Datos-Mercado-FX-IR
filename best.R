@@ -4,7 +4,7 @@
 library(tidyverse)
 library(readxl)
 
-setwd("F:\\BEST\\TasasyTc2018")
+setwd("F:\\BEST\\TasasyTc2018\\")
 
 rm(list=ls())
 
@@ -107,8 +107,6 @@ read_ir <- function(datos, datos_cambios){
   #print(colnames(datos))
   
   for (curva in curvas_validas) {
-    
-    print(curva)
   
     nombre_temp <- c()
     curva_temp <- c()
@@ -117,15 +115,15 @@ read_ir <- function(datos, datos_cambios){
     for (t in tenors) {
       
       rate_value <- as.numeric(datos[[t, paste(curva, "Values", sep = "_")]], digits=9)
+      #print(rate_value)
 
-      if(is.na(rate_value)){
+      if(!is.na(rate_value)){
         
         rate_value <- rate_value/100
         curva_temp <- c(curva_temp, rate_value)
         
-        tenors_temp <- c(tenors_temp, t)
+        tenors_temp <- c(tenors_temp, t - 1)
         nombre_temp <- c(nombre_temp, curva)
-        print(curva)
       }
       else{
         break
@@ -133,24 +131,12 @@ read_ir <- function(datos, datos_cambios){
     }
   
     columna_fechas <- rep(fecha, length(nombre_temp))
-    print(nombre_temp)
     irs <- rbind(irs, cbind(columna_fechas, nombre_temp, tenors_temp, curva_temp))
-    print(columna_fechas)
   }
   
-  #colnames(irs) <- c("process_date", "zero_curve", "tenor", "rate_value")
+  colnames(irs) <- c("process_date", "zero_curve", "tenor", "rate_value")
 
-  return(irs)
-
-#  fxs <- unlist(fxs, use.names = FALSE)
-#  fxs <- cbind(fxs)
-#  
-#  csv <- cbind(columna_fechas, tipos_de_cambios, fxs)
-#  colnames(csv) <- c("process_date", "fx_code", "fx_value")
-#  
-#  write.table(csv, file = paste("FX\\", fecha, ".csv", sep = ""), quote = FALSE, row.names=FALSE, na = "", col.names = TRUE, sep = ",")
-#  
-  
+  write.table(irs, file = paste("IR\\", fecha, ".csv", sep = ""), quote = FALSE, row.names=FALSE, na = "", col.names = TRUE, sep = ",")
 }
 
 
@@ -159,18 +145,7 @@ datos_fx <- lapply(mis_archivos, read_excel, sheet = "PARAMETROS", col_names = F
 
 
 for(i in 1:length(datos_fx)){
-  #read_fx(datos_fx[i])
+  read_fx(datos_fx[i])
+  read_ir(datos_ir[[i]],datos_fx[i])
   }
 
-
-
-#aaaa <- read_excel("NNCTASA20180104.xlsx", sheet = 2,col_names = FALSE, range = "A1:B42")
-#hojas <- excel_sheets("NNCTASA20180104.xlsx")
-#
-#aaaa[1]
-#aaaa[2]
-#
-#fx <- datos_fx[1]
-#
-#codes <- fx[[1]]
-daot
